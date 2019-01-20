@@ -194,17 +194,6 @@ void Dictionary::computeSubwords(
       }
     }
   }
-  // add word cluster
-  if (!word2cluster_.empty()) {
-    // remove BOW and EOW from word
-    std::string word_no_symbol = word.substr(1, word.size() - 2);
-    std::string word_cluster = word2cluster_.at(word_no_symbol);
-    int32_t h = hash(word_cluster) % args_->bucket;
-    pushHash(ngrams, h);
-    if (substrings) {
-      substrings->push_back(word_cluster);
-    }
-  }
 
 }
 
@@ -212,9 +201,20 @@ void Dictionary::initNgrams() {
   for (size_t i = 0; i < size_; i++) {
     std::string word = BOW + words_[i].word + EOW;
     words_[i].subwords.clear();
-    words_[i].subwords.push_back(i);
+
+    // not reliable if word is rare
+    if (words_[i].count >= args_->freq_threshold) {
+      words_[i].subwords.push_back(i);
+    }
+
     if (words_[i].word != EOS) {
       computeSubwords(word, words_[i].subwords);
+    }
+    // add word cluster for rare words
+    if (!word2cluster_.empty() && words_[i].count < args_->freq_threshold) {
+      std::string word_cluster = word2cluster_.at(words_[i].word);
+      int32_t h = hash(word_cluster) % args_->bucket;
+      pushHash(words_[i].subwords, h);
     }
   }
 }

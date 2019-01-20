@@ -19,7 +19,7 @@ set -x
 # array=(zh ja en vi th tl pt my km id)
 # array=(zh ja)
 # array=("train.en" "train.de")
-array=(wiki2)
+array=(penn wiki2)
 for element in "${array[@]}"
 do
     input="/home/lr/yukun/common_corpus/data/50lm//$element/train.txt"
@@ -28,7 +28,7 @@ do
     dim=200
     output="$(dirname $input)/train.txt.ff.word_and_cl"
     # ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -maxn 0 
-    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -maxn 0 -cluster $cluster
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -maxn 0 -cluster $cluster -freq_thre 100
 
     # remove extra bin file
     rm "${output}.bin"
