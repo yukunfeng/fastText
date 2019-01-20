@@ -103,6 +103,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         exit(EXIT_FAILURE);
       } else if (args[ai] == "-input") {
         input = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-cluster") {
+        cluster = std::string(args.at(ai + 1));
       } else if (args[ai] == "-output") {
         output = std::string(args.at(ai + 1));
       } else if (args[ai] == "-lr") {
@@ -187,7 +189,7 @@ void Args::parseArgs(const std::vector<std::string>& args) {
     exit(EXIT_FAILURE);
   }
   if (wordNgrams <= 1 && maxn == 0) {
-    bucket = 0;
+    // bucket = 0;
   }
 }
 
@@ -203,6 +205,7 @@ void Args::printBasicHelp() {
             << "  -input              training file path\n"
             << "  -output             output file path\n"
             << "\nThe following arguments are optional:\n"
+            << "  -cluster            cluster file path\n"
             << "  -verbose            verbosity level [" << verbose << "]\n";
 }
 

@@ -16,6 +16,7 @@
 #include <iostream>
 #include <iterator>
 #include <stdexcept>
+#include <sstream>
 
 namespace fasttext {
 
@@ -178,6 +179,7 @@ void Dictionary::computeSubwords(
     if ((word[i] & 0xC0) == 0x80) {
       continue;
     }
+
     for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
       ngram.push_back(word[j++]);
       while (j < word.size() && (word[j] & 0xC0) == 0x80) {
@@ -192,6 +194,18 @@ void Dictionary::computeSubwords(
       }
     }
   }
+  // add word cluster
+  if (!word2cluster_.empty()) {
+    // remove BOW and EOW from word
+    std::string word_no_symbol = word.substr(1, word.size() - 2);
+    std::string word_cluster = word2cluster_.at(word_no_symbol);
+    int32_t h = hash(word_cluster) % args_->bucket;
+    pushHash(ngrams, h);
+    if (substrings) {
+      substrings->push_back(word_cluster);
+    }
+  }
+
 }
 
 void Dictionary::initNgrams() {
@@ -229,6 +243,18 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const {
   // trigger eofbit
   in.get();
   return !word.empty();
+}
+
+void Dictionary::readCluster(std::istream& in) {
+  std::string line;
+  while(std::getline(in, line)) {
+      std::stringstream linestream(line);
+      std::string word;
+      std::string cluster;
+      linestream >> word >> cluster;
+      cluster = "cluster_" + cluster;
+      word2cluster_[word] = cluster;
+  }
 }
 
 void Dictionary::readFromFile(std::istream& in) {

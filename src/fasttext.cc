@@ -717,6 +717,18 @@ void FastText::train(const Args& args) {
     // manage expectations
     throw std::invalid_argument("Cannot use stdin for training!");
   }
+
+  // Load word clusters
+  if (args_->cluster != "") {
+    std::ifstream cifs(args_->cluster);
+    if (!cifs.is_open()) {
+      throw std::invalid_argument(
+          args_->cluster + " cannot be opened for loading word clusters!");
+    }
+    dict_->readCluster(cifs);
+    cifs.close();
+  }
+
   std::ifstream ifs(args_->input);
   if (!ifs.is_open()) {
     throw std::invalid_argument(
@@ -724,6 +736,7 @@ void FastText::train(const Args& args) {
   }
   dict_->readFromFile(ifs);
   ifs.close();
+
 
   if (args_->pretrainedVectors.size() != 0) {
     loadVectors(args_->pretrainedVectors);
