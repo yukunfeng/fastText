@@ -75,6 +75,10 @@ int32_t Dictionary::nwords() const {
   return nwords_;
 }
 
+int32_t Dictionary::noutwords() const {
+  return out2count_.size();
+}
+
 int32_t Dictionary::nlabels() const {
   return nlabels_;
 }
@@ -257,6 +261,30 @@ void Dictionary::readCluster(std::istream& in) {
   }
 }
 
+void Dictionary::initOutWord() {
+  int32_t out_idx = 0;
+  inword2out_.clear();
+  std::map<std::string, int32_t> out2id;
+  for (int32_t i = 0; i < size_; i++) {
+    std::string out_str = word2cluster_.at(words_[i].word);
+    if (words_[i].count >= args_->freq_thre_out) {
+      out_str = words_[i].word;
+    }
+    auto it = out2id.find(out_str);
+    if (it == out2id.end()) {
+      out2id[out_str] = out_idx;
+      out_idx++;
+    }
+    inword2out_.push_back(out2id[out_str]);
+  }
+
+  std::vector<int64_t> out2count(out2id.size(), 0);
+  for (int32_t i = 0; i < size_; i++) {
+    out2count[inword2out_[i]] += words_[i].count;
+  }
+  out2count_ = out2count;
+}
+
 void Dictionary::readFromFile(std::istream& in) {
   std::string word;
   int64_t minThreshold = 1;
@@ -282,6 +310,7 @@ void Dictionary::readFromFile(std::istream& in) {
     throw std::invalid_argument(
         "Empty vocabulary. Try a smaller -minCount value.");
   }
+  initOutWord();
 }
 
 void Dictionary::threshold(int64_t t, int64_t tl) {
@@ -331,6 +360,14 @@ std::vector<int64_t> Dictionary::getCounts(entry_type type) const {
     if (w.type == type) {
       counts.push_back(w.count);
     }
+  }
+  return counts;
+}
+
+std::vector<int64_t> Dictionary::getOutCounts() const {
+  std::vector<int64_t> counts;
+  for (size_t i = 0; i < out2count_.size(); ++i) {
+    counts.push_back(out2count_[i]);
   }
   return counts;
 }

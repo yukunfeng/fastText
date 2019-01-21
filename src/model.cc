@@ -269,7 +269,8 @@ real Model::computeLoss(
   real loss = 0.0;
 
   if (args_->loss == loss_name::ns) {
-    loss = negativeSampling(targets[targetIndex], lr);
+    // loss = negativeSampling(targets[targetIndex], lr);
+    loss = negativeSampling(targetIndex, lr);
   } else if (args_->loss == loss_name::hs) {
     loss = hierarchicalSoftmax(targets[targetIndex], lr);
   } else if (args_->loss == loss_name::softmax) {

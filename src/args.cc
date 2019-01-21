@@ -23,6 +23,7 @@ Args::Args() {
   minCount = 5;
   minCountLabel = 0;
   freq_threshold = 1;
+  freq_thre_out = 1;
   neg = 5;
   wordNgrams = 1;
   loss = loss_name::ns;
@@ -116,6 +117,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         dim = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-freq_thre") {
         freq_threshold = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-freq_thre_out") {
+        freq_thre_out = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-ws") {
         ws = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-epoch") {
@@ -210,6 +213,7 @@ void Args::printBasicHelp() {
             << "\nThe following arguments are optional:\n"
             << "  -cluster            cluster file path\n"
             << "  -freq_thre          freq_threshold of word\n"
+            << "  -freq_thre_out      freq_threshold of out word\n"
             << "  -verbose            verbosity level [" << verbose << "]\n";
 }
 

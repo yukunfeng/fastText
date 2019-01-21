@@ -33,6 +33,9 @@ struct entry {
 };
 
 class Dictionary {
+public:
+  std::vector<int32_t> inword2out_;
+
  protected:
   static const int32_t MAX_VOCAB_SIZE = 30000000;
   static const int32_t MAX_LINE_SIZE = 1024;
@@ -49,6 +52,7 @@ class Dictionary {
   std::vector<int32_t> word2int_;
   std::vector<entry> words_;
 
+  std::vector<int64_t> out2count_;
   std::map<std::string, std::string> word2cluster_;
 
   std::vector<real> pdiscard_;
@@ -72,6 +76,7 @@ class Dictionary {
   explicit Dictionary(std::shared_ptr<Args>);
   explicit Dictionary(std::shared_ptr<Args>, std::istream&);
   int32_t nwords() const;
+  int32_t noutwords() const;
   int32_t nlabels() const;
   int64_t ntokens() const;
   int32_t getId(const std::string&) const;
@@ -95,10 +100,12 @@ class Dictionary {
   bool readWord(std::istream&, std::string&) const;
   void readFromFile(std::istream&);
   void readCluster(std::istream&);
+  void initOutWord();
   std::string getLabel(int32_t) const;
   void save(std::ostream&) const;
   void load(std::istream&);
   std::vector<int64_t> getCounts(entry_type) const;
+  std::vector<int64_t> getOutCounts() const;
   int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&)
       const;
   int32_t getLine(std::istream&, std::vector<int32_t>&, std::minstd_rand&)

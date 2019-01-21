@@ -32,6 +32,7 @@ class Args {
   double lr;
   // if freq(word) < freq_threshold: word embedding is not used
   int freq_threshold;
+  int freq_thre_out;
   int lrUpdateRate;
   int dim;
   int ws;

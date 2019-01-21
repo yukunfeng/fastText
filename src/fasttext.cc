@@ -364,7 +364,9 @@ void FastText::cbow(Model& model, real lr, const std::vector<int32_t>& line) {
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
-    model.update(bow, line, w, lr);
+    int32_t target_out_idx = dict_->inword2out_[line[w]];
+    model.update(bow, line, target_out_idx, lr);
+    // model.update(bow, line, w, lr);
   }
 }
 
@@ -636,7 +638,8 @@ void FastText::trainThread(int32_t threadId) {
   if (args_->model == model_name::sup) {
     model.setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
-    model.setTargetCounts(dict_->getCounts(entry_type::word));
+    // model.setTargetCounts(dict_->getCounts(entry_type::word));
+    model.setTargetCounts(dict_->getOutCounts());
   }
 
   const int64_t ntokens = dict_->ntokens();
@@ -749,7 +752,7 @@ void FastText::train(const Args& args) {
   if (args_->model == model_name::sup) {
     output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
   } else {
-    output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
+    output_ = std::make_shared<Matrix>(dict_->noutwords(), args_->dim);
   }
   output_->zero();
   startThreads();
@@ -757,7 +760,8 @@ void FastText::train(const Args& args) {
   if (args_->model == model_name::sup) {
     model_->setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
-    model_->setTargetCounts(dict_->getCounts(entry_type::word));
+    // model_->setTargetCounts(dict_->getCounts(entry_type::word));
+    model_->setTargetCounts(dict_->getOutCounts());
   }
 }
 
