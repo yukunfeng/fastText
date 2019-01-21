@@ -12,7 +12,7 @@ set -x
 input="/home/lr/yukun/common_corpus/data/50lm/penn/train.txt"
 dim=100
 output="out"
-gdb --args ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -thread 12 -cluster "./penn.cluster" -maxn 0 -freq_thre 100
+gdb --args ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -thread 1 -cluster "./penn.cluster" -maxn 0 -freq_thre 100 -freq_thre_out 100
 # ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -thread 12 
 
 # remove extra bin file

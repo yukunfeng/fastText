@@ -28,7 +28,7 @@ do
     dim=200
     output="$(dirname $input)/train.txt.ff.word_and_cl"
     # ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -maxn 0 
-    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -maxn 0 -cluster $cluster -freq_thre 100
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -maxn 0 -cluster $cluster -freq_thre 100 -freq_thre_out 100
 
     # remove extra bin file
     rm "${output}.bin"
