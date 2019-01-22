@@ -30,8 +30,10 @@ class Args {
   std::string output;
   std::string cluster;
   double lr;
-  // if freq(word) < freq_threshold: word embedding is not used
-  int freq_threshold;
+  // input word freq threshold
+  int freq_thre_in_wd;
+  // input cluster freq threshold
+  int freq_thre_in_cl;
   int freq_thre_out;
   int lrUpdateRate;
   int dim;

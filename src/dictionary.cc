@@ -207,7 +207,7 @@ void Dictionary::initNgrams() {
     words_[i].subwords.clear();
 
     // not reliable if word is rare
-    if (words_[i].count >= args_->freq_threshold) {
+    if (words_[i].count >= args_->freq_thre_in_wd) {
       words_[i].subwords.push_back(i);
     }
 
@@ -215,7 +215,7 @@ void Dictionary::initNgrams() {
       computeSubwords(word, words_[i].subwords);
     }
     // add word cluster for rare words
-    if (!word2cluster_.empty() && words_[i].count < args_->freq_threshold) {
+    if (!word2cluster_.empty() && words_[i].count < args_->freq_thre_in_cl) {
       std::string word_cluster = word2cluster_.at(words_[i].word);
       int32_t h = hash(word_cluster) % args_->bucket;
       pushHash(words_[i].subwords, h);
