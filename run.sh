@@ -19,22 +19,91 @@ set -x
 # array=(zh ja en vi th tl pt my km id)
 # array=(zh ja)
 # array=("train.en" "train.de")
-array=(penn wiki2)
+
+function gen_out() {
+    local output=$1
+    rm "${output}.bin"
+    output="${output}.vec"
+    # generate map
+    python ./embs/map.py "${output}" > "${output}.map"
+}
+
+
+array=(en penn wiki2 vi th kim-cs kim-de)
 for element in "${array[@]}"
 do
     input="/home/lr/yukun/common_corpus/data/50lm//$element/train.txt"
     cluster="/home/lr/yukun/common_corpus/data/clustercat/${element}.cluster"
     # input="/home/lr/yukun/OpenNMT-py/data/iwslt14.tokenized.de-en/$element"
     dim=200
-    output="$(dirname $input)/train.txt.ff.word_and_cl"
-    # ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -maxn 0 
-    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -maxn 0 -cluster $cluster -freq_thre_in_wd 25 -freq_thre_in_cl 100 -freq_thre_out 100
+    in_wd=100
+    in_cl=100
+    thre_out=100
+    output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}.sub"
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out
+    gen_out $output
 
-    # remove extra bin file
-    rm "${output}.bin"
-    output="${output}.vec"
+    continue
 
-    # generate map
-    python ./embs/map.py "${output}" > "${output}.map"
+    # use cluster out
+    in_wd=1
+    in_cl=1
+    thre_out=100
+    output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}"
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out
+    gen_out $output
+
+    # use all cluster in
+    in_wd=1
+    in_cl=100000000
+    thre_out=1
+    output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}"
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out
+    gen_out $output
+
+    # use 100-cluster in
+    in_wd=1
+    in_cl=100
+    thre_out=1
+    output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}"
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out
+    gen_out $output
+
+    # use 100-cluster no-infreq-word in
+    in_wd=100
+    in_cl=100
+    thre_out=1
+    output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}"
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out
+    gen_out $output
+
+    # use 100-cluster no-rare-word in
+    in_wd=15
+    in_cl=100
+    thre_out=1
+    output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}"
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out
+    gen_out $output
+
+    # cbow default subword
+    output="$(dirname $input)/train.txt.cbow.default.subw"
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster
+    gen_out $output
+
+    # cbow no subword
+    output="$(dirname $input)/train.txt.cbow"
+    ./fasttext cbow -input $input -minCount 1 -dim $dim -output $output -maxn 0 -cluster $cluster
+    gen_out $output
+
+    # cbow no subword with cluster
+    in_wd=100
+    in_cl=100
+    thre_out=100
+    output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}"
+    ./fasttext cbow -input $input -maxn 0 -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out
+    gen_out $output
 
 done
+
+# cd ~/pytorch_examples/word_lm
+# bash run.sh
