@@ -30,6 +30,7 @@ class Args {
   std::string output;
   std::string cluster;
   double lr;
+  int save_outvec;
   // input word freq threshold
   int freq_thre_in_wd;
   // input cluster freq threshold

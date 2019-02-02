@@ -23,6 +23,7 @@ Args::Args() {
   minCount = 5;
   minCountLabel = 0;
   freq_thre_in_wd = 1;
+  save_outvec = 0;
   freq_thre_in_cl = 1;
   freq_thre_out = 1;
   neg = 5;
@@ -122,6 +123,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         freq_thre_in_wd = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-freq_thre_out") {
         freq_thre_out = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-save_outvec") {
+        save_outvec = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-ws") {
         ws = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-epoch") {
@@ -218,6 +221,7 @@ void Args::printBasicHelp() {
             << "  -freq_thre_in_wd    freq_threshold of input word\n"
             << "  -freq_thre_in_cl    freq_threshold of input \n"
             << "  -freq_thre_out      freq_threshold of out word\n"
+            << "  -save_outvec        1 for saving outvec\n"
             << "  -verbose            verbosity level [" << verbose << "]\n";
 }
 

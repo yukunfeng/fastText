@@ -28,17 +28,16 @@ function gen_out() {
 
 # array=(zh ja vi th kim-cs kim-de)
 # array=(wiki2 vi th kim-cs kim-de)
+# array=(zh vi de en es ar he ja tr)
 array=(penn)
-# array=(en penn wiki2 vi th tl kim-cs kim-de ja zh)
 for element in "${array[@]}"
 do
-    catcl=210
+    catcl=600
     input="/home/lr/yukun/common_corpus/data/50lm//$element/train.txt"
-    cluster="/home/lr/yukun/common_corpus/data/clustercat/${element}.cluster"
+    cluster="/home/lr/yukun/common_corpus/data/clustercat/${element}.cluster.${catcl}"
     # input="/home/lr/yukun/OpenNMT-py/data/iwslt14.tokenized.de-en/$element"
     dim=200
-    note="nosub"
-    # mode='skipgram'
+    note="catcl.$catcl"
     mode='cbow'
     epoch=5
     maxn=6
@@ -52,28 +51,36 @@ do
         minn=1
     fi;
 
-    # output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}"
+    # output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.nosub"
     # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn 0
     # gen_out $output
 
     # cbow no subword
-    in_wd=100
-    in_cl=100
-    thre_out=1000000
-    output="$(dirname $input)/train.txt.${dim}.w${in_wd}.c${in_cl}.o${thre_out}.$mode.e${epoch}.${note}"
-    ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn 0
-    gen_out $output
+    # in_wd=100
+    # in_cl=100
+    # thre_out=1000000
+    # output="$(dirname $input)/train.txt.${dim}.w${in_wd}.c${in_cl}.o${thre_out}.$mode.e${epoch}.${note}.nosub"
+    # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn 0
+    # gen_out $output
 
-    # output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}"
+    # output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.sub"
     # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn $maxn -minn $minn
     # gen_out $output
 
-    # in_wd=10
-    # in_cl=100
-    # thre_out=1000000
-    # output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}.$mode.e${epoch}.${note}"
+    # in_wd=1
+    # in_cl=1
+    # thre_out=10000000
+    # output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}.$mode.e${epoch}.${note}.sub"
     # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn $maxn -minn $minn
     # gen_out $output
+
+    # saving out
+    in_wd=1
+    in_cl=1
+    thre_out=100
+    output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}.$mode.e${epoch}.${note}.sub"
+    ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn $maxn -minn $minn -save_outvec 1
+    gen_out $output
 done
 
 # cd ~/pytorch_examples/word_lm

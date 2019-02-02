@@ -100,6 +100,28 @@ void FastText::saveVectors(const std::string& filename) {
   ofs.close();
 }
 
+void FastText::saveOutVectors(const std::string& filename) {
+  std::ofstream ofs(filename);
+  if (!ofs.is_open()) {
+    throw std::invalid_argument(
+        filename + " cannot be opened for saving vectors!");
+  }
+  ofs << dict_->nwords() << " " << args_->dim << std::endl;
+  Vector vec(args_->dim);
+  for (int32_t i = 0; i < dict_->nwords(); i++) {
+    int32_t out_idx = dict_->inword2out_[i];
+    std::string word = dict_->getWord(i);
+    vec.zero();
+    if (quant_) {
+      vec.addRow(*qoutput_, out_idx);
+    } else {
+      vec.addRow(*output_, out_idx);
+    }
+    ofs << word << " " << vec << std::endl;
+  }
+  ofs.close();
+}
+
 void FastText::saveVectors() {
   saveVectors(args_->output + ".vec");
 }
