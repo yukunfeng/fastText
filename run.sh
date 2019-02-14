@@ -28,20 +28,30 @@ function gen_out() {
 
 # array=(zh ja vi th kim-cs kim-de)
 # array=(wiki2 vi th kim-cs kim-de)
-# array=(zh vi de en es ar he ja tr)
-array=(penn)
+# array=(iwslt14.de  iwslt14.en  iwslt15.en  iwslt15.vi)
+# array=(iwslt15.en  iwslt15.vi)
+# array=(iwslt14.de  iwslt14.en)
+array=(zh vi de en es ar he ja tr)
+# array=(vi de en es ar he tr)
+# array=(penn)
+
+# array=("kyotofree.en" "kyotofree.ja")
+# array=(iwslt15.en-cs.en iwslt15.en-cs.cs iwslt15.en-de.en iwslt15.en-de.de iwslt15.en-fr.en iwslt15.en-fr.fr iwslt15.en-th.en iwslt15.en-th.th iwslt15.en-vi.en iwslt15.en-vi.vi iwslt15.en-zh.en iwslt15.en-zh.zh)
+# array=(iwslt15.en-cs.en iwslt15.en-cs.cs iwslt15.en-th.en iwslt15.en-th.th iwslt15.en-zh.en iwslt15.en-zh.zh)
+# array=(iwslt15.en-de.de iwslt15.en-de.en iwslt15.en-fr.fr iwslt15.en-fr.en)
 for element in "${array[@]}"
 do
     catcl=600
     input="/home/lr/yukun/common_corpus/data/50lm//$element/train.txt"
-    cluster="/home/lr/yukun/common_corpus/data/clustercat/${element}.cluster.${catcl}"
-    # input="/home/lr/yukun/OpenNMT-py/data/iwslt14.tokenized.de-en/$element"
+    cluster="/home/lr/yukun/common_corpus/data/50lm/${element}/train.txt.cluster.${catcl}"
     dim=200
-    note="catcl.$catcl"
     mode='cbow'
     epoch=5
     maxn=6
     minn=3
+    neg=100
+    loss="ns"   # ns, hs, softmax
+    note="catcl.${catcl}.neg${neg}.${loss}"
     if [ "$element" = "zh"  ]; then 
         maxn=1
         minn=1
@@ -50,38 +60,38 @@ do
         maxn=1
         minn=1
     fi;
-
-    # output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.nosub"
-    # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn 0
-    # gen_out $output
+    if [ "$element" = "kyotofree.ja"  ]; then 
+        maxn=1
+        minn=1
+    fi;
+    if [ "$element" = "iwslt15.en-zh.zh"  ]; then 
+        maxn=1
+        minn=1
+    fi;
 
     # cbow no subword
-    # in_wd=100
-    # in_cl=100
-    # thre_out=1000000
-    # output="$(dirname $input)/train.txt.${dim}.w${in_wd}.c${in_cl}.o${thre_out}.$mode.e${epoch}.${note}.nosub"
-    # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn 0
-    # gen_out $output
+    output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.nosub"
+    ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn 0 -neg $neg -loss $loss
+    gen_out $output
 
-    # output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.sub"
-    # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn $maxn -minn $minn
-    # gen_out $output
+    # cbow no subword
+    in_wd=100
+    in_cl=100
+    thre_out=100
+    output="$(dirname $input)/train.txt.${dim}.w${in_wd}.c${in_cl}.o${thre_out}.$mode.e${epoch}.${note}.nosub"
+    ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn 0 -neg $neg -loss $loss
+    gen_out $output
 
-    # in_wd=1
-    # in_cl=1
-    # thre_out=10000000
-    # output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}.$mode.e${epoch}.${note}.sub"
-    # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn $maxn -minn $minn
-    # gen_out $output
+    # cbow subword
+    output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.sub"
+    ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn $maxn -minn $minn -neg $neg -loss $loss
+    gen_out $output
 
-    # saving out
+    # cbow subword
     in_wd=1
     in_cl=1
     thre_out=100
-    output="$(dirname $input)/train.txt.${dim}.inwd${in_wd}.incl${in_cl}.threout${thre_out}.$mode.e${epoch}.${note}.sub"
-    ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn $maxn -minn $minn -save_outvec 1
+    output="$(dirname $input)/train.txt.${dim}.w${in_wd}.c${in_cl}.o${thre_out}.$mode.e${epoch}.${note}.sub"
+    ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn $maxn -minn $minn -neg $neg -loss $loss
     gen_out $output
 done
-
-# cd ~/pytorch_examples/word_lm
-# bash run.sh

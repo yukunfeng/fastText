@@ -274,7 +274,8 @@ real Model::computeLoss(
   } else if (args_->loss == loss_name::hs) {
     loss = hierarchicalSoftmax(targets[targetIndex], lr);
   } else if (args_->loss == loss_name::softmax) {
-    loss = softmax(targets[targetIndex], lr);
+    // loss = softmax(targets[targetIndex], lr);
+    loss = softmax(targetIndex, lr);
   } else if (args_->loss == loss_name::ova) {
     loss = oneVsAll(targets, lr);
   } else {
