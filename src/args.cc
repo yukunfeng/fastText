@@ -16,6 +16,7 @@
 namespace fasttext {
 
 Args::Args() {
+  use_word = 1;
   lr = 0.05;
   dim = 100;
   ws = 5;
@@ -111,6 +112,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         lrUpdateRate = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-dim") {
         dim = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-use_word") {
+        use_word = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-ws") {
         ws = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-epoch") {
@@ -220,7 +223,8 @@ void Args::printDictionaryHelp() {
             << "  -maxn               max length of char ngram [" << maxn
             << "]\n"
             << "  -t                  sampling threshold [" << t << "]\n"
-            << "  -label              labels prefix [" << label << "]\n";
+            << "  -label              labels prefix [" << label << "]\n"
+            << "  -use_word           whether use word itself\n";
 }
 
 void Args::printTrainingHelp() {

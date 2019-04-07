@@ -198,7 +198,10 @@ void Dictionary::initNgrams() {
   for (size_t i = 0; i < size_; i++) {
     std::string word = BOW + words_[i].word + EOW;
     words_[i].subwords.clear();
-    words_[i].subwords.push_back(i);
+    // add word itself if using
+    if (args_->use_word == 1) {
+      words_[i].subwords.push_back(i);
+    }
     if (words_[i].word != EOS) {
       computeSubwords(word, words_[i].subwords);
     }

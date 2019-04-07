@@ -29,6 +29,8 @@ class Args {
   std::string input;
   std::string output;
   double lr;
+  // whether use word itself or not
+  int use_word;
   int lrUpdateRate;
   int dim;
   int ws;
