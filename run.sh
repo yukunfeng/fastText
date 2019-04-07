@@ -33,15 +33,16 @@ function gen_out() {
 # array=(iwslt14.de  iwslt14.en)
 array=(zh vi de en es ar he ja tr)
 # array=(vi de en es ar he tr)
-# array=(penn)
+# array=(penn wiki2)
+# array=(zh ja)
 
 # array=("kyotofree.en" "kyotofree.ja")
 # array=(iwslt15.en-cs.en iwslt15.en-cs.cs iwslt15.en-de.en iwslt15.en-de.de iwslt15.en-fr.en iwslt15.en-fr.fr iwslt15.en-th.en iwslt15.en-th.th iwslt15.en-vi.en iwslt15.en-vi.vi iwslt15.en-zh.en iwslt15.en-zh.zh)
 # array=(iwslt15.en-cs.en iwslt15.en-cs.cs iwslt15.en-th.en iwslt15.en-th.th iwslt15.en-zh.en iwslt15.en-zh.zh)
-# array=(iwslt15.en-de.de iwslt15.en-de.en iwslt15.en-fr.fr iwslt15.en-fr.en)
+# array=(iwslt15.en-cs.cs iwslt15.en-cs.en iwslt15.vi iwslt15.en)
 for element in "${array[@]}"
 do
-    catcl=600
+    catcl=800
     input="/home/lr/yukun/common_corpus/data/50lm//$element/train.txt"
     cluster="/home/lr/yukun/common_corpus/data/50lm/${element}/train.txt.cluster.${catcl}"
     dim=200
@@ -49,15 +50,15 @@ do
     epoch=5
     maxn=6
     minn=3
-    neg=100
+    neg=5
     loss="ns"   # ns, hs, softmax
     note="catcl.${catcl}.neg${neg}.${loss}"
     if [ "$element" = "zh"  ]; then 
-        maxn=1
+        maxn=4
         minn=1
     fi;
     if [ "$element" = "ja"  ]; then 
-        maxn=1
+        maxn=4
         minn=1
     fi;
     if [ "$element" = "kyotofree.ja"  ]; then 
@@ -70,9 +71,9 @@ do
     fi;
 
     # cbow no subword
-    output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.nosub"
-    ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn 0 -neg $neg -loss $loss
-    gen_out $output
+    # output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.nosub"
+    # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn 0 -neg $neg -loss $loss
+    # gen_out $output
 
     # cbow no subword
     in_wd=100
@@ -83,9 +84,9 @@ do
     gen_out $output
 
     # cbow subword
-    output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.sub"
-    ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn $maxn -minn $minn -neg $neg -loss $loss
-    gen_out $output
+    # output="$(dirname $input)/train.txt.$dim.$mode.e${epoch}.${note}.sub"
+    # ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn $maxn -minn $minn -neg $neg -loss $loss
+    # gen_out $output
 
     # cbow subword
     in_wd=1
@@ -94,4 +95,8 @@ do
     output="$(dirname $input)/train.txt.${dim}.w${in_wd}.c${in_cl}.o${thre_out}.$mode.e${epoch}.${note}.sub"
     ./fasttext $mode -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn $maxn -minn $minn -neg $neg -loss $loss
     gen_out $output
+
+
+    # time ./fasttext $mode -thread 12 -input $input -minCount 1 -dim $dim -output $output -cluster $cluster -freq_thre_in_wd $in_wd -freq_thre_in_cl $in_cl -freq_thre_out $thre_out -epoch $epoch -maxn $maxn -minn $minn -neg $neg -loss $loss
+    # time ./fasttext $mode -thread 12 -input $input -minCount 1 -dim $dim -output $output  -cluster $cluster -epoch $epoch -maxn $maxn -minn $minn -neg $neg -loss $loss
 done
