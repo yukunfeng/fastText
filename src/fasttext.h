@@ -17,6 +17,7 @@
 #include <queue>
 #include <set>
 #include <tuple>
+#include <map>
 
 #include "args.h"
 #include "dictionary.h"
@@ -89,6 +90,7 @@ class FastText {
   std::shared_ptr<const Matrix> getOutputMatrix() const;
 
   void saveVectors(const std::string& filename);
+  void saveNgramVectors(const std::string& filename);
 
   void saveModel(const std::string& filename);
 

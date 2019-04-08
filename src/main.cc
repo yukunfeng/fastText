@@ -360,8 +360,9 @@ void train(const std::vector<std::string> args) {
   }
   ofs.close();
   fasttext.train(a);
-  fasttext.saveModel(outputFileName);
-  fasttext.saveVectors(a.output + ".vec");
+  // fasttext.saveModel(outputFileName);
+  // fasttext.saveVectors(a.output + ".vec");
+  fasttext.saveNgramVectors(a.output + ".ngram.vec");
   if (a.saveOutput) {
     fasttext.saveOutput(a.output + ".output");
   }

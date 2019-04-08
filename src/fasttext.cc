@@ -104,6 +104,32 @@ void FastText::saveVectors() {
   saveVectors(args_->output + ".vec");
 }
 
+void FastText::saveNgramVectors(const std::string& filename) {
+  std::ofstream ofs(filename);
+  if (!ofs.is_open()) {
+    throw std::invalid_argument(
+        filename + " cannot be opened for saving vectors!");
+  }
+  // used to check whether ngram has been printed or not
+  std::map<std::string, int32_t> ngram2num;
+  for (int32_t i = 0; i < dict_->nwords(); i++) {
+    std::string word = dict_->getWord(i);
+    std::vector<std::pair<std::string, Vector>> ngramVectors =
+        getNgramVectors(word);
+    for (const auto& ngramVector : ngramVectors) {
+        // add word itself if using
+        if (args_->use_word == 0 && ngramVector.first == word) {
+          continue;
+        }
+        if (ngram2num.find(ngramVector.first) == ngram2num.end()) {
+          ofs << ngramVector.first << " " << ngramVector.second << std::endl;
+          ngram2num[word] = 1;
+        }
+    }
+  }
+  ofs.close();
+}
+
 void FastText::saveOutput(const std::string& filename) {
   std::ofstream ofs(filename);
   if (!ofs.is_open()) {

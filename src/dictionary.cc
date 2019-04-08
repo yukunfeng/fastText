@@ -19,9 +19,10 @@
 
 namespace fasttext {
 
-const std::string Dictionary::EOS = "</s>";
-const std::string Dictionary::BOW = "<";
-const std::string Dictionary::EOW = ">";
+// const std::string Dictionary::EOS = "</s>";
+const std::string Dictionary::EOS = "<eos>";
+const std::string Dictionary::BOW = "^";
+const std::string Dictionary::EOW = "$";
 
 Dictionary::Dictionary(std::shared_ptr<Args> args)
     : args_(args),
