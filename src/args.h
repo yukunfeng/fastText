@@ -31,6 +31,7 @@ class Args {
   double lr;
   // whether use word itself or not
   int use_word;
+  int save_word_vec;
   int lrUpdateRate;
   int dim;
   int ws;

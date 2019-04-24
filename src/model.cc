@@ -157,7 +157,7 @@ void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden)
       hidden.addRow(*wi_, *it);
     }
   }
-  hidden.mul(1.0 / input.size());
+  // hidden.mul(1.0 / input.size());
 }
 
 bool Model::comparePairs(

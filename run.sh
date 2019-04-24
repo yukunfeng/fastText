@@ -14,7 +14,9 @@ set -x
 # array=(penn wiki2 nounseen_en kim-cs kim-de kim-es kim-fr kim-ru)
 # array=(penn wiki2 kim-cs kim-de kim-es kim-fr kim-ru zh ja en vi th tl pt my km id)
 # array=(penn wiki2 kim-cs kim-de kim-es kim-fr kim-ru en vi th tl pt my km id)
-array=(penn)
+# array=(zh vi de en es ar he ja tr) 
+array=(vi de en es ar he tr) 
+# array=(penn)
 
 for element in "${array[@]}"
 do

@@ -17,6 +17,7 @@ namespace fasttext {
 
 Args::Args() {
   use_word = 1;
+  save_word_vec = 0;
   lr = 0.05;
   dim = 100;
   ws = 5;
@@ -114,6 +115,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         dim = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-use_word") {
         use_word = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-save_word_vec") {
+        save_word_vec = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-ws") {
         ws = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-epoch") {
