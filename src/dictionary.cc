@@ -216,7 +216,12 @@ void Dictionary::initNgrams() {
     }
     // add word cluster for rare words
     if (!word2cluster_.empty() && words_[i].count < args_->freq_thre_in_cl) {
-      std::string word_cluster = word2cluster_.at(words_[i].word);
+      auto it = word2cluster_.find(words_[i].word);
+      std::string word_cluster = "cluster_0";
+      if (it != word2cluster_.end()) {
+        word_cluster = word2cluster_.at(words_[i].word);
+      }
+      // std::string word_cluster = word2cluster_.at(words_[i].word);
       int32_t h = hash(word_cluster) % args_->bucket;
       pushHash(words_[i].subwords, h);
     }
@@ -266,7 +271,12 @@ void Dictionary::initOutWord() {
   inword2out_.clear();
   std::map<std::string, int32_t> out2id;
   for (int32_t i = 0; i < size_; i++) {
-    std::string out_str = word2cluster_.at(words_[i].word);
+    auto it_cluster = word2cluster_.find(words_[i].word);
+    std::string out_str = "cluster_0";
+    if (it_cluster != word2cluster_.end()) {
+      out_str = word2cluster_.at(words_[i].word);
+    }
+    // std::string out_str = word2cluster_.at(words_[i].word);
     if (words_[i].count >= args_->freq_thre_out) {
       out_str = words_[i].word;
     }
